@@ -2,7 +2,7 @@
   "name": "listado-react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://urieljavier.github.io/react-calculadora",
+  "homepage": "http://urieljavier.github.io/react-listado",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",

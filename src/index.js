@@ -162,9 +162,6 @@ class Main extends React.Component {
 const Navbar = (props) => {
     return (<nav className='navbar'>
                 <ul>
-                    <li><a href="#0">Inicio</a></li>
-                    <li><a href="#1">Sobre nosotros</a></li>
-                    <li><a href="#2">Contacto</a></li>
                 </ul>
             </nav>)
 }
