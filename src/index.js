@@ -7,13 +7,12 @@ const listadoUrls = ['https://api.themoviedb.org/3/movie/top_rated?api_key='+key
                 'https://api.themoviedb.org/3/movie/popular?api_key='+key+'&language=en-US&page=1']
 const urlImg = 'https://image.tmdb.org/t/p/w300/'
 const urlVideo = 'https://api.themoviedb.org/3/movie/'
-const urlYou = 'https://www.youtube.com/watch?v='
 const urlPelicula = 'https://api.themoviedb.org/3/movie/'
 
 const Card = ({movie,move,onmouseover,onmouseout,index,punta,img,onClick}) => {
     return(
         <div className={'card '+move+' '+punta} onClick={onClick} onMouseOver={onmouseover} onMouseOut={onmouseout} id={index} name={movie} >
-            <img className='imgCard' src={img}></img>
+            <img className='imgCard' src={img} alt='portada'></img>
             <div className='infoCard' hidden>{movie}</div>
         </div>
     );
@@ -21,14 +20,13 @@ const Card = ({movie,move,onmouseover,onmouseout,index,punta,img,onClick}) => {
 
 const ListCard = ({tipo,index,onClick}) => {
 
-    const [hasError, setErrors] = useState(false);
     const [listMovies, setListMovies] = useState([]);
     const [listMoviesImg, setListMoviesImg] = useState([]);
     const [listMoviesOnOver, setListMoviesOnOver] = useState([]);
     
     useEffect(() => {
         data(listadoUrls[index]);
-    },[]);
+    },[index]);
 
     async function data(url,index){
         fetch(url)
@@ -39,7 +37,7 @@ const ListCard = ({tipo,index,onClick}) => {
                 setListMoviesImg(listMoviesImg.concat(res.results.map((movie,i)=>urlImg+res.results[i].backdrop_path)));
                 setListMoviesOnOver(Array(listMoviesAux.length).fill('none'))
             })
-            .catch((err) => setErrors(err));
+            .catch((err) => console.log(err));
     }
 
     const handleOnOver = event => {
@@ -52,7 +50,7 @@ const ListCard = ({tipo,index,onClick}) => {
                 moveListCard.push('left');
             }else if(i>cardOver){
                 moveListCard.push('right')
-            }else if(i==cardOver)  {
+            }else if(i===cardOver)  {
                 moveListCard.push('center');
             }else{
                 moveListCard.push('none')
@@ -69,9 +67,9 @@ const ListCard = ({tipo,index,onClick}) => {
     let listado = listMovies.map((movie,i) =>{
 
                         let punta = '';
-                        if(i==0){
+                        if(i===0){
                             punta = 'start'
-                        } else if(i==listMovies.length-1){
+                        } else if(i===listMovies.length-1){
                             punta = 'end'
                         }
 
@@ -96,18 +94,25 @@ const ListGroup = ({onClick}) => {
 }
 
 const News = ({pelicula,trailerKey}) => {
+
+    let generos = [];
+    
+    if(pelicula.genres !== undefined){
+        generos = pelicula.genres.map((genero,index) => <div key={index} className='genero'>{genero.name}</div>)
+    }
+
     return  (<section className='portada'>
                 <div className='infoPeli'>
                     <h1 className='nombrePortada'>{pelicula.original_title}</h1>
-                    <div className='overview'>{pelicula.overview}</div>
-                    <div className='duracion'>{pelicula.runtime}</div>
+                    <div className='duracion'>{pelicula.runtime +' minutes'}</div>
                     <div className='fecha'>{pelicula.release_date}</div>
-                    <div className='notaPublico'>{pelicula.vote_average}</div>   
+                    <div className='overview'>{pelicula.overview}</div>
+                    <div className='generos'>{generos}</div>   
                 </div>
                 <div className='trailerPeli'>
                     <iframe src={'https://www.youtube.com/embed/'+trailerKey
                             +'?autoplay=1&controls=0&disablekb=1&fs=0&loop=0&modestbranding=1&rel=0&showinfo=0&mute=1&autohide=1'} 
-                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" id='iframe_youtube' title='trailer'></iframe>
                     <div className='fader'></div>
                 </div>
             </section>)
@@ -143,7 +148,12 @@ class Main extends React.Component {
             .catch(err=>console.log(err));
     }
     
-    render(){return (<main>
+    componentWillMount(){
+        this.getData(120);
+    }
+
+    render(){
+        return (<main>
         <News pelicula={this.state.pelicula} trailerKey={this.state.trailerKey}></News>
         <ListGroup onClick={this.onClick.bind(this)}></ListGroup>
     </main>)}
